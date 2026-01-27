@@ -22,6 +22,7 @@ const Content = (props) => {
     </div>
   );
 };
+
 const Part = ({ part, exercises }) => {
   return (
     <p>
