@@ -1,0 +1,102 @@
+import { useState, useEffect } from "react";
+import Filter from "./components/Filter";
+import Form from "./components/Form";
+import ShowPersons from "./components/ShowPersons";
+import personServices from "./services/persons";
+
+const App = () => {
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    personServices
+      .getAll()
+      .then((initialPerson) => {
+        setPersons(initialPerson);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+
+  const personsToShow = persons.filter((person) =>
+    person.name.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const addNewName = (e) => {
+    e.preventDefault();
+
+    if (!newName.trim() || !newNumber.trim()) {
+      alert("Name and number are required");
+      return;
+    }
+
+    const existingPerson = persons.find(
+      (person) => person.name.toLowerCase() === newName.toLowerCase(),
+    );
+    
+    const personObj = {
+      name: newName,
+      number: newNumber,
+    };
+
+    if (existingPerson) {
+      const ok = window.confirm(
+        `${newName} is already added to phonebook,replace the old number with a new one ?`,
+      );
+      if (!ok) return;
+
+      personServices
+        .update(existingPerson.id, personObj)
+        .then((returnedPerson) => {
+          setPersons((prev) =>
+            prev.map((p) => (p.id === existingPerson.id ? returnedPerson : p)),
+          );
+        })
+        .catch((error) => console.log(error));
+    } else {
+      personServices
+        .create(personObj)
+        .then((returnedPerson) => {
+          setPersons((prev) => prev.concat(returnedPerson));
+        })
+        .catch((error) => console.log(error));
+    }
+
+    setNewName("");
+    setNewNumber("");
+  };
+
+  const deletePerson = (id, name) => {
+    const ok = window.confirm(`Delete ${name} ?`);
+
+    if (!ok) return;
+
+    personServices
+      .remove(String(id))
+      .then((RemovedPerson) => {
+        setPersons((prev) =>
+          prev.filter((person) => person.id !== RemovedPerson.id),
+        );
+      })
+      .catch((error) => console.log(error));
+  };
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Filter search={search} setSearch={setSearch} />
+      <Form
+        newName={newName}
+        newNumber={newNumber}
+        addNewName={addNewName}
+        setNewName={setNewName}
+        setNewNumber={setNewNumber}
+      />
+      <h2>Numbers</h2>
+      <ShowPersons personsToShow={personsToShow} deletePerson={deletePerson} />
+    </div>
+  );
+};
+
+export default App;
