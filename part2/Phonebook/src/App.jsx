@@ -3,12 +3,15 @@ import Filter from "./components/Filter";
 import Form from "./components/Form";
 import ShowPersons from "./components/ShowPersons";
 import personServices from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
+  const [message, setMessage] = useState(null);
+  const [successfull, setSuccessfull] = useState(false);
 
   useEffect(() => {
     personServices
@@ -34,7 +37,7 @@ const App = () => {
     const existingPerson = persons.find(
       (person) => person.name.toLowerCase() === newName.toLowerCase(),
     );
-    
+
     const personObj = {
       name: newName,
       number: newNumber,
@@ -53,7 +56,22 @@ const App = () => {
             prev.map((p) => (p.id === existingPerson.id ? returnedPerson : p)),
           );
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          setMessage(
+            `Information of ${personObj.name} has already been removed from server`,
+          );
+          console.log(error);
+          setSuccessfull(false);
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+        });
+
+      setMessage(`updated ${existingPerson.name} number`);
+      setSuccessfull(true);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     } else {
       personServices
         .create(personObj)
@@ -61,6 +79,12 @@ const App = () => {
           setPersons((prev) => prev.concat(returnedPerson));
         })
         .catch((error) => console.log(error));
+
+      setMessage(`Added ${personObj.name}`);
+      setSuccessfull(true);
+      setTimeout(() => {
+        setMessage(null);
+      }, 5000);
     }
 
     setNewName("");
@@ -85,6 +109,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} successfull={successfull} />
       <Filter search={search} setSearch={setSearch} />
       <Form
         newName={newName}
