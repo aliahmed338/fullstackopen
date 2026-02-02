@@ -98,10 +98,8 @@ const App = () => {
 
     personServices
       .remove(String(id))
-      .then((RemovedPerson) => {
-        setPersons((prev) =>
-          prev.filter((person) => person.id !== RemovedPerson.id),
-        );
+      .then(() => {
+        setPersons((prev) => prev.filter((person) => person.id !== id));
       })
       .catch((error) => console.log(error));
   };
