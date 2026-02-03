@@ -2,7 +2,6 @@ const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
-const serverless = require("serverless-http");
 
 const app = express();
 app.use(cors());
@@ -96,4 +95,4 @@ app.get("/api/info", (request, response) => {
 //const PORT = process.env.PORT || 3001;
 
 // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-module.exports = serverless(app);
+module.exports = app
