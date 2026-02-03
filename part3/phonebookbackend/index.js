@@ -4,7 +4,6 @@ const path = require("path");
 const cors = require("cors");
 const serverless = require("serverless-http");
 
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -92,7 +91,7 @@ app.get("/api/info", (request, response) => {
   );
 });
 
-app.get("*", (req, res) => {
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
