@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static("dist"));
+app.use(express.static(path.join(__dirname, "dist")));
 
 morgan.token("body", (req) => {
   return JSON.stringify(req.body);
@@ -92,7 +92,7 @@ app.get("/api/info", (request, response) => {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "dist", "index.html"));
+  res.sendFile(path.join(__dirname, "dist"));
 });
 
 const PORT = process.env.PORT || 3001;
